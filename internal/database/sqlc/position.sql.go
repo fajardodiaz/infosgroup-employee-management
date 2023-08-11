@@ -24,3 +24,79 @@ func (q *Queries) CreatePosition(ctx context.Context, name string) (Position, er
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
+
+const deletePosition = `-- name: DeletePosition :exec
+DELETE FROM position
+WHERE id = $1
+`
+
+func (q *Queries) DeletePosition(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deletePosition, id)
+	return err
+}
+
+const getPosition = `-- name: GetPosition :one
+SELECT id, name FROM position
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetPosition(ctx context.Context, id int64) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, id)
+	var i Position
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
+const listPositions = `-- name: ListPositions :many
+SELECT id, name FROM position
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type ListPositionsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListPositions(ctx context.Context, arg ListPositionsParams) ([]Position, error) {
+	rows, err := q.db.QueryContext(ctx, listPositions, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Position
+	for rows.Next() {
+		var i Position
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updatePosition = `-- name: UpdatePosition :one
+UPDATE position
+set name = $2
+WHERE id = $1
+RETURNING id, name
+`
+
+type UpdatePositionParams struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) (Position, error) {
+	row := q.db.QueryRowContext(ctx, updatePosition, arg.ID, arg.Name)
+	var i Position
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}

@@ -24,3 +24,79 @@ func (q *Queries) CreateState(ctx context.Context, name string) (State, error) {
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
+
+const deleteState = `-- name: DeleteState :exec
+DELETE FROM state
+WHERE id = $1
+`
+
+func (q *Queries) DeleteState(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteState, id)
+	return err
+}
+
+const getState = `-- name: GetState :one
+SELECT id, name FROM state
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetState(ctx context.Context, id int64) (State, error) {
+	row := q.db.QueryRowContext(ctx, getState, id)
+	var i State
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
+const listStates = `-- name: ListStates :many
+SELECT id, name FROM state
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type ListStatesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListStates(ctx context.Context, arg ListStatesParams) ([]State, error) {
+	rows, err := q.db.QueryContext(ctx, listStates, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []State
+	for rows.Next() {
+		var i State
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateState = `-- name: UpdateState :one
+UPDATE state
+set name = $2
+WHERE id = $1
+RETURNING id, name
+`
+
+type UpdateStateParams struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) UpdateState(ctx context.Context, arg UpdateStateParams) (State, error) {
+	row := q.db.QueryRowContext(ctx, updateState, arg.ID, arg.Name)
+	var i State
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}

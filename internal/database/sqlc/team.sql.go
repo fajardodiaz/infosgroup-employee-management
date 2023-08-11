@@ -24,3 +24,79 @@ func (q *Queries) CreateTeam(ctx context.Context, name string) (Team, error) {
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
+
+const deleteTeam = `-- name: DeleteTeam :exec
+DELETE FROM team
+WHERE id = $1
+`
+
+func (q *Queries) DeleteTeam(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTeam, id)
+	return err
+}
+
+const getTeam = `-- name: GetTeam :one
+SELECT id, name FROM team
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
+	row := q.db.QueryRowContext(ctx, getTeam, id)
+	var i Team
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
+const listTeams = `-- name: ListTeams :many
+SELECT id, name FROM team
+ORDER BY id
+LIMIT $1
+OFFSET $2
+`
+
+type ListTeamsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, error) {
+	rows, err := q.db.QueryContext(ctx, listTeams, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Team
+	for rows.Next() {
+		var i Team
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateTeam = `-- name: UpdateTeam :one
+UPDATE team
+set name = $2
+WHERE id = $1
+RETURNING id, name
+`
+
+type UpdateTeamParams struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, error) {
+	row := q.db.QueryRowContext(ctx, updateTeam, arg.ID, arg.Name)
+	var i Team
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
