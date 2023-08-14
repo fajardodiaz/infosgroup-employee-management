@@ -1,21 +1,25 @@
 CREATE TABLE "state" (
   "id" bigserial PRIMARY KEY,
-  "name" varchar(100) UNIQUE NOT NULL
+  "name" varchar(100) UNIQUE NOT NULL,
+  "created_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "position" (
   "id" bigserial PRIMARY KEY,
-  "name" varchar(100) UNIQUE NOT NULL
+  "name" varchar(100) UNIQUE NOT NULL,
+  "created_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "project" (
   "id" bigserial PRIMARY KEY,
-  "name" varchar(100) UNIQUE NOT NULL
+  "name" varchar(100) UNIQUE NOT NULL,
+  "created_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "team" (
   "id" bigserial PRIMARY KEY,
-  "name" varchar(100) UNIQUE NOT NULL
+  "name" varchar(100) UNIQUE NOT NULL,
+  "created_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "employee" (

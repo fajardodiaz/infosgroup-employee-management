@@ -9,16 +9,19 @@ createdb:
 dropdb:
 	docker exec -it infosgroup-employee-management-db dropdb infosgroup-employee-management-db
 
+migrate:
+	migrate create -ext sql -dir internal/database/migrations -seq init_schema
+
 migrateup:
-	migrate -path migrations -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose up
+	migrate -path internal/database/migrations -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path migrations/ -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose down
+	migrate -path internal/database/migrations -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose down
 
 sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover ./internal/database/tests
 
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc testdb
