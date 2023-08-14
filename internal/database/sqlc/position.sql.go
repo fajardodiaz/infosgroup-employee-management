@@ -15,13 +15,13 @@ INSERT INTO position(
 )VALUES(
     $1
 )
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 func (q *Queries) CreatePosition(ctx context.Context, name string) (Position, error) {
 	row := q.db.QueryRowContext(ctx, createPosition, name)
 	var i Position
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
@@ -36,19 +36,19 @@ func (q *Queries) DeletePosition(ctx context.Context, id int64) error {
 }
 
 const getPosition = `-- name: GetPosition :one
-SELECT id, name FROM position
+SELECT id, name, created_at FROM position
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetPosition(ctx context.Context, id int64) (Position, error) {
 	row := q.db.QueryRowContext(ctx, getPosition, id)
 	var i Position
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
 const listPositions = `-- name: ListPositions :many
-SELECT id, name FROM position
+SELECT id, name, created_at FROM position
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -68,7 +68,7 @@ func (q *Queries) ListPositions(ctx context.Context, arg ListPositionsParams) ([
 	var items []Position
 	for rows.Next() {
 		var i Position
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -86,7 +86,7 @@ const updatePosition = `-- name: UpdatePosition :one
 UPDATE position
 set name = $2
 WHERE id = $1
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 type UpdatePositionParams struct {
@@ -97,6 +97,6 @@ type UpdatePositionParams struct {
 func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) (Position, error) {
 	row := q.db.QueryRowContext(ctx, updatePosition, arg.ID, arg.Name)
 	var i Position
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }

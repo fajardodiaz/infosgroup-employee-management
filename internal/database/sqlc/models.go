@@ -18,7 +18,7 @@ type Employee struct {
 	EndEvaluationDate time.Time      `json:"end_evaluation_date"`
 	Phone             sql.NullString `json:"phone"`
 	Gender            sql.NullString `json:"gender"`
-	CreatedAt         sql.NullTime   `json:"created_at"`
+	CreatedAt         time.Time      `json:"created_at"`
 	StateID           sql.NullInt32  `json:"state_id"`
 	PositionID        sql.NullInt32  `json:"position_id"`
 	TeamID            sql.NullInt32  `json:"team_id"`
@@ -30,21 +30,25 @@ type EmployeeProject struct {
 }
 
 type Position struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Project struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type State struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Team struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }

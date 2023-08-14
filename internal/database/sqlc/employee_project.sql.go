@@ -30,3 +30,18 @@ func (q *Queries) AssignEmployeeToProject(ctx context.Context, arg AssignEmploye
 	err := row.Scan(&i.EmployeeID, &i.ProjectID)
 	return i, err
 }
+
+const removeEmployeeProject = `-- name: RemoveEmployeeProject :exec
+DELETE FROM employee_project 
+WHERE employee_id = $1 AND project_id = $2
+`
+
+type RemoveEmployeeProjectParams struct {
+	EmployeeID int64 `json:"employee_id"`
+	ProjectID  int64 `json:"project_id"`
+}
+
+func (q *Queries) RemoveEmployeeProject(ctx context.Context, arg RemoveEmployeeProjectParams) error {
+	_, err := q.db.ExecContext(ctx, removeEmployeeProject, arg.EmployeeID, arg.ProjectID)
+	return err
+}

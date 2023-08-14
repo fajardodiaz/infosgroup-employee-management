@@ -15,13 +15,13 @@ INSERT INTO state(
 )VALUES(
     $1
 )
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 func (q *Queries) CreateState(ctx context.Context, name string) (State, error) {
 	row := q.db.QueryRowContext(ctx, createState, name)
 	var i State
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
@@ -36,19 +36,19 @@ func (q *Queries) DeleteState(ctx context.Context, id int64) error {
 }
 
 const getState = `-- name: GetState :one
-SELECT id, name FROM state
+SELECT id, name, created_at FROM state
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetState(ctx context.Context, id int64) (State, error) {
 	row := q.db.QueryRowContext(ctx, getState, id)
 	var i State
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
 const listStates = `-- name: ListStates :many
-SELECT id, name FROM state
+SELECT id, name, created_at FROM state
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -68,7 +68,7 @@ func (q *Queries) ListStates(ctx context.Context, arg ListStatesParams) ([]State
 	var items []State
 	for rows.Next() {
 		var i State
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -86,7 +86,7 @@ const updateState = `-- name: UpdateState :one
 UPDATE state
 set name = $2
 WHERE id = $1
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 type UpdateStateParams struct {
@@ -97,6 +97,6 @@ type UpdateStateParams struct {
 func (q *Queries) UpdateState(ctx context.Context, arg UpdateStateParams) (State, error) {
 	row := q.db.QueryRowContext(ctx, updateState, arg.ID, arg.Name)
 	var i State
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }

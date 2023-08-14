@@ -6,3 +6,7 @@ INSERT INTO employee_project(
     $1, $2
 )
 RETURNING *;
+
+-- name: RemoveEmployeeProject :exec
+DELETE FROM employee_project 
+WHERE employee_id = $1 AND project_id = $2;

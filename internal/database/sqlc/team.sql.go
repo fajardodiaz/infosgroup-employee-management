@@ -15,13 +15,13 @@ INSERT INTO team(
 )VALUES(
     $1
 )
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 func (q *Queries) CreateTeam(ctx context.Context, name string) (Team, error) {
 	row := q.db.QueryRowContext(ctx, createTeam, name)
 	var i Team
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
@@ -36,19 +36,19 @@ func (q *Queries) DeleteTeam(ctx context.Context, id int64) error {
 }
 
 const getTeam = `-- name: GetTeam :one
-SELECT id, name FROM team
+SELECT id, name, created_at FROM team
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 	row := q.db.QueryRowContext(ctx, getTeam, id)
 	var i Team
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
 const listTeams = `-- name: ListTeams :many
-SELECT id, name FROM team
+SELECT id, name, created_at FROM team
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -68,7 +68,7 @@ func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, e
 	var items []Team
 	for rows.Next() {
 		var i Team
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -86,7 +86,7 @@ const updateTeam = `-- name: UpdateTeam :one
 UPDATE team
 set name = $2
 WHERE id = $1
-RETURNING id, name
+RETURNING id, name, created_at
 `
 
 type UpdateTeamParams struct {
@@ -97,6 +97,6 @@ type UpdateTeamParams struct {
 func (q *Queries) UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, error) {
 	row := q.db.QueryRowContext(ctx, updateTeam, arg.ID, arg.Name)
 	var i Team
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }

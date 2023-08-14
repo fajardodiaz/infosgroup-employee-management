@@ -22,6 +22,6 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./internal/database/tests
+	go test -v -cover ./internal/database/tests -count=1
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc testdb
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test
