@@ -65,7 +65,7 @@ func (q *Queries) ListProjects(ctx context.Context, arg ListProjectsParams) ([]P
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Project
+	items := []Project{}
 	for rows.Next() {
 		var i Project
 		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {

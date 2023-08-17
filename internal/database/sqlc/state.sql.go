@@ -65,7 +65,7 @@ func (q *Queries) ListStates(ctx context.Context, arg ListStatesParams) ([]State
 		return nil, err
 	}
 	defer rows.Close()
-	var items []State
+	items := []State{}
 	for rows.Next() {
 		var i State
 		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {

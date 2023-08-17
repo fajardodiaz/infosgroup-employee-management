@@ -65,7 +65,7 @@ func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, e
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Team
+	items := []Team{}
 	for rows.Next() {
 		var i Team
 		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {

@@ -65,7 +65,7 @@ func (q *Queries) ListPositions(ctx context.Context, arg ListPositionsParams) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Position
+	items := []Position{}
 	for rows.Next() {
 		var i Position
 		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
