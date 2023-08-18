@@ -10,3 +10,11 @@ RETURNING *;
 -- name: RemoveEmployeeProject :exec
 DELETE FROM employee_project 
 WHERE employee_id = $1 AND project_id = $2;
+
+-- name: GetEmployeeProjects :many
+SELECT * FROM employee_project
+WHERE employee_id = $1;
+
+-- name: GetProjectEmployees :many
+SELECT * FROM employee_project
+WHERE project_id = $1;

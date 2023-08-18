@@ -31,6 +31,62 @@ func (q *Queries) AssignEmployeeToProject(ctx context.Context, arg AssignEmploye
 	return i, err
 }
 
+const getEmployeeProjects = `-- name: GetEmployeeProjects :many
+SELECT employee_id, project_id FROM employee_project
+WHERE employee_id = $1
+`
+
+func (q *Queries) GetEmployeeProjects(ctx context.Context, employeeID int64) ([]EmployeeProject, error) {
+	rows, err := q.db.QueryContext(ctx, getEmployeeProjects, employeeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EmployeeProject{}
+	for rows.Next() {
+		var i EmployeeProject
+		if err := rows.Scan(&i.EmployeeID, &i.ProjectID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectEmployees = `-- name: GetProjectEmployees :many
+SELECT employee_id, project_id FROM employee_project
+WHERE project_id = $1
+`
+
+func (q *Queries) GetProjectEmployees(ctx context.Context, projectID int64) ([]EmployeeProject, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectEmployees, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EmployeeProject{}
+	for rows.Next() {
+		var i EmployeeProject
+		if err := rows.Scan(&i.EmployeeID, &i.ProjectID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeEmployeeProject = `-- name: RemoveEmployeeProject :exec
 DELETE FROM employee_project 
 WHERE employee_id = $1 AND project_id = $2

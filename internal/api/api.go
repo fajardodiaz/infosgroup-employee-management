@@ -20,38 +20,38 @@ func NewServer(store *database.Store) *Server {
 	states := v1.Group("/states")
 	{
 		states.POST("/", server.createState)
-		states.GET("/:id", server.GetStateById)
-		// states.GET("/")
-		// states.DELETE("/:id")
-		// states.PUT("/:id")
+		states.GET("/", server.getStates)
+		states.GET("/:id", server.getStateById)
+		states.DELETE("/:id", server.deleteState)
+		states.PUT("/:id", server.updateState)
 	}
 
-	// projects := v1.Group("/projects")
-	// {
-	// 	projects.GET("/")
-	// 	projects.GET("/:id")
-	// 	projects.POST("/")
-	// 	projects.DELETE("/:id")
-	// 	projects.PUT("/:id")
-	// }
+	projects := v1.Group("/projects")
+	{
+		projects.GET("/", server.getProjects)
+		projects.GET("/:id", server.getProjectById)
+		projects.POST("/", server.createProject)
+		projects.DELETE("/:id", server.deleteProject)
+		projects.PUT("/:id", server.updateProject)
+	}
 
-	// positions := v1.Group("/positions")
-	// {
-	// 	positions.GET("/")
-	// 	positions.GET("/:id")
-	// 	positions.POST("/")
-	// 	positions.DELETE("/:id")
-	// 	positions.PUT("/:id")
-	// }
+	positions := v1.Group("/positions")
+	{
+		positions.GET("/", server.getPositions)
+		positions.GET("/:id", server.getPositionById)
+		positions.POST("/", server.createPosition)
+		positions.DELETE("/:id", server.deletePosition)
+		positions.PUT("/:id", server.updatePosition)
+	}
 
-	// teams := v1.Group("/teams")
-	// {
-	// 	teams.GET("/")
-	// 	teams.GET("/:id")
-	// 	teams.POST("/")
-	// 	teams.DELETE("/:id")
-	// 	teams.PUT("/:id")
-	// }
+	teams := v1.Group("/teams")
+	{
+		teams.GET("/", server.getTeams)
+		teams.GET("/:id", server.getTeamById)
+		teams.POST("/", server.createTeam)
+		teams.DELETE("/:id", server.deleteTeam)
+		teams.PUT("/:id", server.updateTeam)
+	}
 
 	// employees := v1.Group("/employees")
 	// {
@@ -62,17 +62,17 @@ func NewServer(store *database.Store) *Server {
 	// 	employees.PUT("/:id")
 	// }
 
-	// employees_project := v1.Group("/assignments")
-	// {
-	// 	// Select all the employees in a project
-	// 	employees_project.GET("/project/:id/employees")
-	// 	// Select all the projects assigned to a single employee
-	// 	employees_project.GET("/employee/:id/projects")
-	// 	// Assign an employee to a project
-	// 	employees_project.POST("/employee/:id/project/:id")
-	// 	// Delete an employee from a project
-	// 	employees_project.DELETE("/employee/:id/project/:id")
-	// }
+	employees_project := v1.Group("/assignments")
+	{
+		// Assign an employee to a project
+		employees_project.POST("/project/:id_project/employee/:id_employee", server.AddUserToProject)
+		// Select all the employees in a project
+		employees_project.GET("/project/:id/employees", server.getProjectEmployees)
+		// Select all the projects assigned to a single employee
+		employees_project.GET("/employee/:id/projects", server.getEmployeeProjects)
+		// Delete an employee from a project
+		employees_project.DELETE("/employee/:id/project/:id")
+	}
 
 	server.router = router
 	return server
