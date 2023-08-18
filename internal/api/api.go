@@ -55,10 +55,10 @@ func NewServer(store *database.Store) *Server {
 
 	employees := v1.Group("/employees")
 	{
-		employees.GET("/")
-		employees.GET("/:id")
+		employees.GET("/", server.getEmployees)
+		employees.GET("/:id", server.getEmployeeById)
 		employees.POST("/")
-		employees.DELETE("/:id")
+		employees.DELETE("/:id", server.deleteEmployee)
 		employees.PUT("/:id")
 	}
 
