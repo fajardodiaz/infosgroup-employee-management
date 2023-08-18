@@ -53,14 +53,14 @@ func NewServer(store *database.Store) *Server {
 		teams.PUT("/:id", server.updateTeam)
 	}
 
-	// employees := v1.Group("/employees")
-	// {
-	// 	employees.GET("/")
-	// 	employees.GET("/:id")
-	// 	employees.POST("/")
-	// 	employees.DELETE("/:id")
-	// 	employees.PUT("/:id")
-	// }
+	employees := v1.Group("/employees")
+	{
+		employees.GET("/")
+		employees.GET("/:id")
+		employees.POST("/")
+		employees.DELETE("/:id")
+		employees.PUT("/:id")
+	}
 
 	employees_project := v1.Group("/assignments")
 	{
@@ -71,7 +71,7 @@ func NewServer(store *database.Store) *Server {
 		// Select all the projects assigned to a single employee
 		employees_project.GET("/employee/:id/projects", server.getEmployeeProjects)
 		// Delete an employee from a project
-		employees_project.DELETE("/employee/:id/project/:id")
+		employees_project.DELETE("/employee/:id_employee/project/:id_project", server.deleteEmployeeFromAProject)
 	}
 
 	server.router = router

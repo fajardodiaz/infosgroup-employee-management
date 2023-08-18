@@ -85,3 +85,36 @@ func (server *Server) getProjectEmployees(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, projectEmployees)
 }
+
+type DeleteEmployeeFromAProjectRequest struct {
+	IDProject  int64 `uri:"id_project" binding:"required,min=1"`
+	IdEmployee int64 `uri:"id_employee" binding:"required,min=1"`
+}
+
+func (server *Server) deleteEmployeeFromAProject(ctx *gin.Context) {
+	var req DeleteEmployeeFromAProjectRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse(err))
+		return
+	}
+
+	args := database.RemoveEmployeeProjectParams{
+		EmployeeID: req.IdEmployee,
+		ProjectID:  req.IDProject,
+	}
+
+	err := server.store.RemoveEmployeeProject(ctx, args)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, ErrorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Employee removed from project successfully",
+	})
+}
