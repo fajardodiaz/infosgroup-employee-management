@@ -5,20 +5,20 @@ import (
 	"log"
 
 	"github.com/fajardodiaz/infosgroup-employee-management/internal/api"
+	"github.com/fajardodiaz/infosgroup-employee-management/utils"
 	_ "github.com/lib/pq"
 
 	database "github.com/fajardodiaz/infosgroup-employee-management/internal/database/sqlc"
 )
 
-const (
-	dbDriver      = "postgres"
-	dbSource      = "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable"
-	serverAddress = "0.0.0.0:9000"
-)
-
 func main() {
 
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := utils.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannor read config: ", err)
+	}
+
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func main() {
 	store := database.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
