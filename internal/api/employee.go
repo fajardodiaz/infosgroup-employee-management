@@ -12,10 +12,10 @@ import (
 // List employees handler func
 var paginationEmployeeParams = struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=20"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=200"`
 }{
 	PageID:   1,
-	PageSize: 20,
+	PageSize: 50,
 }
 
 func (server *Server) getEmployees(ctx *gin.Context) {
@@ -24,12 +24,12 @@ func (server *Server) getEmployees(ctx *gin.Context) {
 		return
 	}
 
-	args := database.ListEmployeesParams{
+	args := database.ListEmployeesWithRelParams{
 		Limit:  paginationEmployeeParams.PageSize,
 		Offset: (paginationEmployeeParams.PageID - 1) * paginationEmployeeParams.PageSize,
 	}
 
-	employees, err := server.store.ListEmployees(ctx, args)
+	employees, err := server.store.ListEmployeesWithRel(ctx, args)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
 		return

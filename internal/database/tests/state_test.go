@@ -41,6 +41,16 @@ func TestGetState(t *testing.T) {
 
 }
 
+func TestGetStateIdByName(t *testing.T) {
+	state1 := CreateRandomState(t)
+
+	state2, err := testQueries.GetStateIdByName(context.Background(), state1.Name)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, state2)
+	require.Equal(t, state1.ID, state2)
+}
+
 func TestListStates(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		CreateRandomState(t)

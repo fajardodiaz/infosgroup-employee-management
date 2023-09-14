@@ -10,6 +10,10 @@ RETURNING *;
 SELECT * FROM state
 WHERE id = $1 LIMIT 1;
 
+-- name: GetStateIdByName :one
+SELECT id FROM state
+WHERE name = $1 LIMIT 1;
+
 -- name: ListStates :many
 SELECT * FROM state
 ORDER BY id

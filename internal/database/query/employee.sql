@@ -44,3 +44,16 @@ RETURNING *;
 -- name: DeleteEmployee :exec
 DELETE FROM employee
 WHERE id = $1;
+
+-- name: ListEmployeesWithRel :many
+SELECT employee.id, employee.employee_cod, employee.full_name,employee.birth,employee.ingress_date,employee.end_evaluation_date,
+employee.phone, employee.gender,
+state.name AS state_name, position.name AS position_name, team.name AS team_name 
+FROM employee
+JOIN state ON employee.state_id = state.id
+JOIN position ON employee.position_id = position.id
+JOIN team ON employee.team_id = team.id
+ORDER BY employee.id DESC
+LIMIT $1
+OFFSET $2
+;

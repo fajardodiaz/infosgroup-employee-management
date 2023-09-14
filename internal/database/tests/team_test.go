@@ -39,7 +39,16 @@ func TestGetTeam(t *testing.T) {
 	require.Equal(t, team1.ID, team2.ID)
 	require.Equal(t, team1.Name, team2.Name)
 	require.WithinDuration(t, team1.CreatedAt, team2.CreatedAt, time.Second)
+}
 
+func TestGetTeamIdByName(t *testing.T) {
+	team1 := CreateRandomTeam(t)
+
+	team2, err := testQueries.GetTeamIdByName(context.Background(), team1.Name)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, team2)
+	require.Equal(t, team1.ID, team2)
 }
 
 func TestListTeams(t *testing.T) {

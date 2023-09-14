@@ -2,6 +2,7 @@ package api
 
 import (
 	database "github.com/fajardodiaz/infosgroup-employee-management/internal/database/sqlc"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +15,8 @@ func NewServer(store *database.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
+	router.Use(cors.Default())
+
 	// routes
 	v1 := router.Group("/api/v1")
 
@@ -22,6 +25,7 @@ func NewServer(store *database.Store) *Server {
 		states.POST("/", server.createState)
 		states.GET("/", server.getStates)
 		states.GET("/:id", server.getStateById)
+		states.GET("/name/:name", server.getStateIdByName)
 		states.DELETE("/:id", server.deleteState)
 		states.PUT("/:id", server.updateState)
 	}
@@ -39,6 +43,7 @@ func NewServer(store *database.Store) *Server {
 	{
 		positions.GET("/", server.getPositions)
 		positions.GET("/:id", server.getPositionById)
+		positions.GET("/name/:name", server.getPositionNameById)
 		positions.POST("/", server.createPosition)
 		positions.DELETE("/:id", server.deletePosition)
 		positions.PUT("/:id", server.updatePosition)
@@ -48,6 +53,7 @@ func NewServer(store *database.Store) *Server {
 	{
 		teams.GET("/", server.getTeams)
 		teams.GET("/:id", server.getTeamById)
+		teams.GET("/name/:name", server.getTeamIdByName)
 		teams.POST("/", server.createTeam)
 		teams.DELETE("/:id", server.deleteTeam)
 		teams.PUT("/:id", server.updateTeam)

@@ -10,6 +10,10 @@ RETURNING *;
 SELECT * FROM position
 WHERE id = $1 LIMIT 1;
 
+-- name: GetPositionIdByName :one
+SELECT id FROM position
+WHERE name = $1 LIMIT 1;
+
 -- name: ListPositions :many
 SELECT * FROM position
 ORDER BY id

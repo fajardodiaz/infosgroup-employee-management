@@ -83,6 +83,30 @@ func (server *Server) getTeams(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, teams)
 }
 
+type getTeamIdByNameRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) getTeamIdByName(ctx *gin.Context) {
+	var req getTeamIdByNameRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse(err))
+		return
+	}
+
+	team, err := server.store.GetTeamIdByName(ctx, req.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, ErrorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, team)
+}
+
 type deleteTeamRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }

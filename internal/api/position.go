@@ -26,7 +26,7 @@ func (server *Server) createPosition(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, position)
+	ctx.JSON(http.StatusCreated, position)
 }
 
 type getPositionByIdRequest struct {
@@ -41,6 +41,30 @@ func (server *Server) getPositionById(ctx *gin.Context) {
 	}
 
 	position, err := server.store.GetPosition(ctx, req.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, ErrorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, position)
+}
+
+type getPositionNameByIdRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) getPositionNameById(ctx *gin.Context) {
+	var req getPositionNameByIdRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse(err))
+		return
+	}
+
+	position, err := server.store.GetPositionIdByName(ctx, req.Name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, ErrorResponse(err))

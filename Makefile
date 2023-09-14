@@ -13,10 +13,10 @@ migrate:
 	migrate create -ext sql -dir internal/database/migrations -seq init_schema
 
 migrateup:
-	migrate -path internal/database/migrations -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose up
+	migrate -path internal/database/migrations -database "postgresql://postgres:ZmK3tCJ6QxDI8lyjSn2g@employee-management.cddntvxjxrel.us-east-1.rds.amazonaws.com:5432/employeemanagement_db?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path internal/database/migrations -database "postgresql://root:root@localhost:8082/infosgroup-employee-management-db?sslmode=disable" -verbose down
+	migrate -path internal/database/migrations -database "postgresql://postgres:ZmK3tCJ6QxDI8lyjSn2g@employee-management.cddntvxjxrel.us-east-1.rds.amazonaws.com:5432/employeemanagement_db?sslmode=disable" -verbose down
 
 sqlc:
 	sqlc generate

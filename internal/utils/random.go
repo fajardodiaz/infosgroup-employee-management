@@ -52,30 +52,22 @@ func RandomBirthDate() time.Time {
 }
 
 func RandomIngressDate() time.Time {
-
 	randomDate, err := randomDataTime.GenerateDate("2018-01-01", "2023-01-01")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	date, _ := time.Parse("2006-01-02", randomDate)
-
 	return date
-
 }
 
 func Add3MonthsToDate(date time.Time) time.Time {
 	newDate := date.AddDate(0, 3, 0)
-
 	return newDate
 }
 
 // // Random int between min and max
 func RandonPhone(min, max int64) string {
-
 	phone := min + rand.Int63n(max-min+1)
-
 	newStringPhone := strconv.Itoa(int(phone))
-
 	return newStringPhone
 }

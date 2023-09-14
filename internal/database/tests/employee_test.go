@@ -86,6 +86,27 @@ func TestListEmployees(t *testing.T) {
 
 }
 
+func TestListEmployeesWithRel(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		CreateRandomEmployee(t)
+	}
+
+	args := database.ListEmployeesWithRelParams{
+		Limit:  5,
+		Offset: 5,
+	}
+
+	employees, err := testQueries.ListEmployeesWithRel(context.Background(), args)
+
+	require.NoError(t, err)
+	require.Len(t, employees, 5)
+
+	for _, position := range employees {
+		require.NotEmpty(t, position)
+	}
+
+}
+
 func TestUpdateEmployee(t *testing.T) {
 	employee1 := CreateRandomEmployee(t)
 

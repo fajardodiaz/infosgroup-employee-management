@@ -53,6 +53,30 @@ func (server *Server) getStateById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, state)
 }
 
+type getStateByIdNameRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) getStateIdByName(ctx *gin.Context) {
+	var req getStateByIdNameRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse(err))
+		return
+	}
+
+	state, err := server.store.GetStateIdByName(ctx, req.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, ErrorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, state)
+}
+
 var paginationStateParams = struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=20"`

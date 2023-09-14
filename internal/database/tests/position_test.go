@@ -38,7 +38,16 @@ func TestGetPosition(t *testing.T) {
 	require.Equal(t, position1.ID, position2.ID)
 	require.Equal(t, position1.Name, position2.Name)
 	require.WithinDuration(t, position1.CreatedAt, position2.CreatedAt, time.Second)
+}
 
+func TestGetPositonIdByName(t *testing.T) {
+	position1 := CreateRandomPosition(t)
+
+	position2, err := testQueries.GetPositionIdByName(context.Background(), position1.Name)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, position2)
+	require.Equal(t, position1.ID, position2)
 }
 
 func TestListPositions(t *testing.T) {
